@@ -1,5 +1,6 @@
 .DS_Store
 .DAV
+.idea
 node_modules
 bower_components
 *.log

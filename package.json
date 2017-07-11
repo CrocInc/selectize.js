@@ -1,5 +1,5 @@
 {
-  "name": "selectize",
+  "name": "@just/selectize",
   "keywords": [
     "select",
     "ui",
@@ -12,12 +12,12 @@
   ],
   "main": "dist/js/selectize.js",
   "description": "Selectize is a jQuery-based custom <select> UI control. Useful for tagging, contact lists, country selectors, etc.",
-  "version": "0.12.4",
+  "version": "0.12.5",
   "author": "Brian Reavis <brian@thirdroute.com>",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/selectize/selectize.js.git"
+    "url": "git://github.com/CrocInc/selectize.js.git"
   },
   "dependencies": {
     "jquery": "^1.7.0",
@@ -55,9 +55,13 @@
     "build": "make",
     "prestart": "npm run build",
     "start": "grunt serve",
-    "grunt": "grunt"
+    "grunt": "grunt",
+    "prepublishOnly": "grunt --plugins=*"
   },
   "engines": {
     "node": "*"
+  },
+  "publishConfig": {
+    "registry": "https://repo.croc.ru/artifactory/api/npm/just-npm-local/"
   }
 }
