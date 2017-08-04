@@ -15,28 +15,9 @@
  */
 
 Selectize.define('server_search', function () {
-	function removeUnusedOptions(self) {
-		var usedOptions = self.items.map(function (item) {
-			return self.options[item];
-		});
-
-		self.loadedSearches = {};
-		self.userOptions = {};
-		self.renderCache = {};
-		self.options = self.sifter.items = {};
-		self.lastQuery = null;
-
-		usedOptions.forEach(function (option) {
-			var value = self.registerOption(option);
-			if (value) {
-				self.userOptions[value] = true;
-			}
-		});
-	}
-
 	var original = this.onSearchChange;
 	this.onSearchChange = function (value) {
-		removeUnusedOptions(this);
+		this.emptyOptions();
 		original.apply(this, arguments);
 	};
 

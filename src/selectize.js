@@ -743,7 +743,7 @@ $.extend(Selectize.prototype, {
 		fn.apply(self, [function(results) {
 			self.loading = Math.max(self.loading - 1, 0);
 			if (results && results.length) {
-				self.addOption(results);
+				self.addOption(results, true);
 				self.refreshOptions(self.isFocused && !self.isInputHidden);
 			}
 			if (!self.loading) {
@@ -1188,19 +1188,24 @@ $.extend(Selectize.prototype, {
 	 *   this.addOption(data)
 	 *
 	 * @param {object|array} data
+	 * @param {boolean} [persist]
 	 */
-	addOption: function(data) {
+	addOption: function(data, persist) {
 		var i, n, value, self = this;
 
 		if ($.isArray(data)) {
 			for (i = 0, n = data.length; i < n; i++) {
-				self.addOption(data[i]);
+				self.addOption(data[i], persist);
 			}
 			return;
 		}
 
 		if (value = self.registerOption(data)) {
-			self.userOptions[value] = true;
+			if (!persist) {
+				self.userOptions[value] = true;
+			} else if (self.userOptions.hasOwnProperty(value)) {
+				delete self.userOptions[value];
+			}
 			self.lastQuery = null;
 			self.trigger('option_add', value, data);
 		}
@@ -1214,9 +1219,11 @@ $.extend(Selectize.prototype, {
 	 */
 	registerOption: function(data) {
 		var key = hash_key(data[this.settings.valueField]);
-		if (typeof key === 'undefined' || key === null || this.options.hasOwnProperty(key)) return false;
-		data.$order = data.$order || ++this.order;
-		this.options[key] = data;
+		if (typeof key === 'undefined' || key === null) return false;
+		if (!this.options.hasOwnProperty(key)) {
+			data.$order = data.$order || ++this.order;
+			this.options[key] = data;
+		}
 		return key;
 	},
 
@@ -1370,6 +1377,31 @@ $.extend(Selectize.prototype, {
 		self.lastQuery = null;
 		self.trigger('option_clear');
 		self.clear();
+	},
+
+	/**
+	 * Removes all options that are not used in selected items.
+	 * Remaining options are marked as user added.
+	 * If no items are selected, clear all options.
+	 */
+	emptyOptions: function () {
+		var self = this;
+		var usedOptions = self.items.map(function (item) {
+			return self.options[item];
+		});
+
+		self.loadedSearches = {};
+		self.userOptions = {};
+		self.options = self.sifter.items = {};
+		self.renderCache = {};
+		self.lastQuery = null;
+
+		usedOptions.forEach(function (option) {
+			var value = self.registerOption(option);
+			if (value) {
+				self.userOptions[value] = true;
+			}
+		});
 	},
 
 	/**
