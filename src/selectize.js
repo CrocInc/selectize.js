@@ -734,8 +734,9 @@ $.extend(Selectize.prototype, {
 	 * as options to the control.
 	 *
 	 * @param {function} fn
+	 * @param {boolean} [triggerDropdown]
 	 */
-	load: function(fn) {
+	load: function(fn, triggerDropdown) {
 		var self = this;
 		var $wrapper = self.$wrapper.addClass(self.settings.loadingClass);
 
@@ -744,7 +745,10 @@ $.extend(Selectize.prototype, {
 			self.loading = Math.max(self.loading - 1, 0);
 			if (results && results.length) {
 				self.addOption(results, true);
-				self.refreshOptions(self.isFocused && !self.isInputHidden);
+				if (triggerDropdown === undefined) {
+					triggerDropdown = self.isFocused && !self.isInputHidden;
+				}
+				self.refreshOptions(triggerDropdown);
 			}
 			if (!self.loading) {
 				$wrapper.removeClass(self.settings.loadingClass);
