@@ -1195,7 +1195,7 @@ $.extend(Selectize.prototype, {
 	 * @param {boolean} [persist]
 	 */
 	addOption: function(data, persist) {
-		var i, n, value, self = this;
+		var i, n, key, added, self = this;
 
 		if ($.isArray(data)) {
 			for (i = 0, n = data.length; i < n; i++) {
@@ -1204,14 +1204,20 @@ $.extend(Selectize.prototype, {
 			return;
 		}
 
-		if (value = self.registerOption(data)) {
-			if (!persist) {
-				self.userOptions[value] = true;
-			} else if (self.userOptions.hasOwnProperty(value)) {
-				delete self.userOptions[value];
-			}
+		key = hash_key(data[this.settings.valueField]);
+		if (typeof key === 'undefined' || key === null) return;
+
+		added = self.registerOption(data, key);
+
+		if (added && !persist) {
+			self.userOptions[key] = true;
+		} else if (persist && self.userOptions.hasOwnProperty(key)) {
+			delete self.userOptions[key];
+		}
+
+		if (added) {
 			self.lastQuery = null;
-			self.trigger('option_add', value, data);
+			self.trigger('option_add', key, data);
 		}
 	},
 
@@ -1219,15 +1225,14 @@ $.extend(Selectize.prototype, {
 	 * Registers an option to the pool of options.
 	 *
 	 * @param {object} data
+	 * @param {string} [key] Precalculated key for data. Used for the optimization.
 	 * @return {boolean|string}
 	 */
-	registerOption: function(data) {
-		var key = hash_key(data[this.settings.valueField]);
-		if (typeof key === 'undefined' || key === null) return false;
-		if (!this.options.hasOwnProperty(key)) {
-			data.$order = data.$order || ++this.order;
-			this.options[key] = data;
-		}
+	registerOption: function(data, key) {
+		key = key || hash_key(data[this.settings.valueField]);
+		if (typeof key === 'undefined' || key === null || this.options.hasOwnProperty(key)) return false;
+		data.$order = data.$order || ++this.order;
+		this.options[key] = data;
 		return key;
 	},
 
