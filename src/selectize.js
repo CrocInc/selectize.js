@@ -1207,12 +1207,16 @@ $.extend(Selectize.prototype, {
 		key = hash_key(data[this.settings.valueField]);
 		if (typeof key === 'undefined' || key === null) return;
 
+		if (persist && self.userOptions.hasOwnProperty(key)) {
+			// the option added by user will be overwritten by the persistent value
+			delete self.options[key];
+			delete self.userOptions[key];
+		}
+
 		added = self.registerOption(data, key);
 
 		if (added && !persist) {
 			self.userOptions[key] = true;
-		} else if (persist && self.userOptions.hasOwnProperty(key)) {
-			delete self.userOptions[key];
 		}
 
 		if (added) {
