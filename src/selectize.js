@@ -54,6 +54,15 @@ var Selectize = function($input, settings) {
 	// search system
 	self.sifter = new Sifter(this.options, {diacritics: settings.diacritics});
 
+	var tokenize = self.sifter.tokenize;
+	self.sifter.tokenize = function (query) {
+		var tokens = tokenize.call(self.sifter, query);
+		if (self.settings.startsWithSearch && tokens && tokens.length) {
+			tokens[0].regex = new RegExp("^" + tokens[0].regex.source, "i");
+		}
+		return tokens;
+	}
+
 	// build options table
 	if (self.settings.options) {
 		for (i = 0, n = self.settings.options.length; i < n; i++) {
