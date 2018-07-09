@@ -1848,11 +1848,12 @@ $.extend(Selectize.prototype, {
 		var offset = this.settings.dropdownParent === 'body' ? $control.offset() : $control.position();
 		offset.top += $control.outerHeight(true);
 
-		this.$dropdown.css({
-			width : $control[0].getBoundingClientRect().width,
-			top   : offset.top,
-			left  : offset.left
-		});
+        this.$dropdown.css({
+        	width : this.settings.minWidth || $control[0].getBoundingClientRect().width,
+            top   : offset.top,
+            right: 0,
+            left  : (this.settings.alignLeft)? offset.left: "auto"
+        });
 	},
 
 	/**
