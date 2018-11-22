@@ -1850,7 +1850,7 @@ $.extend(Selectize.prototype, {
 
         this.$dropdown.css({
 	        width : $control[0].getBoundingClientRect().width,
-			"min-width": this.settings.minWidth,
+			"min-width": this.settings.minWidth || "auto",
             top   : offset.top,
             right: 0,
             left  : (this.settings.alignLeft)? offset.left: "auto"
