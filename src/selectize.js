@@ -644,7 +644,7 @@ $.extend(Selectize.prototype, {
 
 		var deactivate = function() {
 			self.close();
-			self.setTextboxValue('');
+			if (self.settings.clearOnBlur) self.setTextboxValue('');
 			self.setActiveItem(null);
 			self.setActiveOption(null);
 			self.setCaret(self.items.length);
